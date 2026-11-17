@@ -188,6 +188,56 @@ header.site{position:sticky;top:0;z-index:20;background:rgba(17,26,58,.9);backdr
 .blk-h a:hover { text-decoration: underline; }
 footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;text-align:center;position:relative;z-index:1;}
 .tech{--c:var(--tech)} .sci{--c:var(--sci)} .game{--c:var(--game)} .anime{--c:var(--anime)} .movie{--c:var(--movie)}
+/* Botão WhatsApp */
+.btn-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #25D366;
+  color: #fff !important;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 8px;
+  margin: 10px 0 20px 0;
+  font-size: 15px;
+  transition: background 0.2s, transform 0.2s;
+}
+.btn-whatsapp:hover { 
+  background: #1ebe5d; 
+  transform: translateY(-2px);
+}
+
+/* Botão Voltar ao Topo */
+.back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--surface2);
+  color: #fff;
+  border: 1px solid var(--line);
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.back-to-top.show {
+  opacity: 1;
+  visibility: visible;
+}
+.back-to-top:hover {
+  border-color: var(--tech);
+  transform: translateY(-3px);
+}
 </style>
 </head>
 <body>
@@ -221,7 +271,7 @@ footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:v
 
   <footer>Notícias reunidas de feeds públicos. Cada matéria pertence ao veículo que a publicou, e os links levam à publicação original.</footer>
 </div>
-
+<button id="backToTop" class="back-to-top" title="Voltar ao topo">↑</button>
 <script src="dados/semana.js"></script>
 <script>
 var CATS=[
@@ -331,6 +381,9 @@ function articleView(i){
   var n=NEWS[i],c=catOf(n.c),fs=n.f,multi=fs.length>1;
   var h='<button class="back" type="button" id="bk">&#8592; Voltar às notícias</button><article class="art '+c.cls+'">'+pic(n,"hero-img")+'<div class="cat">'+esc(c.name)+'</div><h1 class="art-t">'+esc(n.t)+'</h1><div class="meta" style="justify-content:flex-start;gap:20px"><span>Publicada '+ago(n.date)+'</span><span>'+fs.length+(multi?' fontes':' fonte')+'</span></div>';
   var textoResumo = n.resumo_ia ? n.resumo_ia : (fs[0].trecho||"Esta fonte não publicou um trecho. Leia a matéria completa pelo link abaixo.");
+  var waText = encodeURIComponent(n.t + " | Leia no Órbita: " + window.location.href);
+  var waLink = "https://api.whatsapp.com/send?text=" + waText;
+  h += '<div><a href="' + waLink + '" target="_blank" class="btn-whatsapp">📱 Compartilhar no WhatsApp</a></div>';
   h+='<h2>Resumo</h2><p>'+esc(textoResumo).replace(/\n/g, '<br><br>')+'</p>';
   if(n.contexto_ia){
     h+='<h2>Por que isso importa</h2><p>'+esc(n.contexto_ia).replace(/\n/g, '<br><br>')+'</p>';
@@ -449,6 +502,17 @@ document.getElementById("q").addEventListener("input",function(e){
 var upd=document.getElementById("upd");
 if(upd&&DADOS.gerado_em)upd.textContent="Atualizado em "+new Date(DADOS.gerado_em).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
 addStories(DADOS.historias||[],false);
+var btt = document.getElementById("backToTop");
+window.addEventListener("scroll", function() {
+  if (window.scrollY > 300) {
+    btt.classList.add("show");
+  } else {
+    btt.classList.remove("show");
+  }
+});
+btt.addEventListener("click", function() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
 draw();route();
 </script>
 </body>
