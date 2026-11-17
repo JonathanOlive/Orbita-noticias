@@ -238,6 +238,16 @@ footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:v
   border-color: var(--tech);
   transform: translateY(-3px);
 }
+/* --- NOTÍCIAS RELACIONADAS --- */
+.related-section { margin-top: 40px; border-top: 1px solid var(--line); padding-top: 24px; }
+.related-title { font: 600 20px/1.2 Unbounded, "IBM Plex Sans", sans-serif; margin-bottom: 16px; color: #fff; }
+.related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.rel-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; cursor: pointer; text-align: left; padding: 0; transition: transform 0.2s; display: flex; flex-direction: column; }
+.rel-card:hover { transform: translateY(-2px); border-color: var(--c); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.rel-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; border-bottom: 2px solid var(--c); }
+.rel-body { padding: 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.rel-cat { font-size: 11px; color: var(--c); font-weight: 700; text-transform: uppercase; }
+.rel-card h3 { font: 500 15px/1.4 "IBM Plex Sans", sans-serif; margin: 0; color: var(--text); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 </style>
 </head>
 <body>
@@ -392,7 +402,27 @@ function articleView(i){
   h+='<h2>'+(multi?'O que cada fonte publicou':'Fonte')+'</h2><ul class="srcs">';
   fs.forEach(function(f){var u=safeUrl(f.link);
     h+='<li><div class="sname">'+esc(f.fonte)+(f.idioma==="en"?' <span class="tag">em inglês</span>':'')+'</div><p><strong>'+esc(f.titulo)+'</strong></p>'+(multi&&f.trecho?'<p>'+esc(cut(f.trecho,300))+'</p>':'')+(u?'<a class="lnk" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Ler a matéria completa em '+esc(f.fonte)+'</a>':'')+'</li>'});
-  return h+'</ul><p class="art-note">A Órbita reúne manchetes e trechos de feeds públicos e sempre aponta para a publicação original, onde está a matéria completa. Resumos e comentários próprios chegam na próxima etapa.</p></article>';
+    h+='</ul><p class="art-note">A Órbita reúne manchetes e trechos de feeds públicos e sempre aponta para a publicação original, onde está a matéria completa. Resumos e comentários próprios chegam na próxima etapa.</p>';
+
+  // --- INÍCIO DO CÓDIGO DE NOTÍCIAS RELACIONADAS ---
+  var relacionadas = NEWS.filter(function(x) { 
+      return x.c === n.c && x.id !== n.id; 
+  }).slice(0, 3);
+
+  if (relacionadas.length > 0) {
+      h += '<div class="related-section"><h2 class="related-title">Leia também em ' + esc(c.name) + '</h2><div class="related-grid">';
+      relacionadas.forEach(function(r) {
+          var imgSrc = r.img || art(r.c, r.seed);
+          h += '<button type="button" class="rel-card ' + c.cls + '" onclick="goto(\'' + r.id + '\')">';
+          h += '<img class="rel-img" src="' + esc(imgSrc) + '" alt="" loading="lazy">';
+          h += '<div class="rel-body"><div class="rel-cat">' + esc(c.name) + '</div><h3>' + esc(r.t) + '</h3></div>';
+          h += '</button>';
+      });
+      h += '</div></div>';
+  }
+  // --- FIM DO CÓDIGO DE NOTÍCIAS RELACIONADAS ---
+
+  return h+'</article>';
 }
 function route(){
   var m=/^#noticia-([a-f0-9]+)$/.exec(location.hash);
