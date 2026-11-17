@@ -1,9 +1,5 @@
-"""Conversa com a Groq para traduzir, resumir e comentar uma história.
+"""Conversa com a Groq para traduzir, resumir e comentar uma história."""
 
-A chave NÃO fica neste arquivo. Ela vem da variável de ambiente GROQ_API_KEY:
-    $env:GROQ_API_KEY="Coloquei minha chave aqui"
-Instalação (uma vez):  pip install groq
-"""
 import os
 import re
 import sys
@@ -11,23 +7,33 @@ import time
 
 from groq import Groq
 
-# --- AQUI ESTAVAM AS LINHAS QUE FALTARAM ---
 MODELO = os.environ.get("ORBITA_MODELO_IA", "openai/gpt-oss-120b")
 client = Groq(api_key=os.environ.get("GROQ_API_KEY", "").strip() or None)
-# -------------------------------------------
+
+# --- AQUI DEFINIMOS O ESTILO DE CADA CATEGORIA ---
+ESTILOS = {
+    "tech": "Use uma linguagem moderna, direta e focada em inovação. Destaque o impacto prático da tecnologia na vida das pessoas e o futuro do setor.",
+    "sci": "Use uma linguagem acadêmica, formal e precisa. Explique conceitos complexos de forma clara, mas mantenha o rigor científico e a seriedade do texto.",
+    "game": "Use uma linguagem jovem, empolgada e dinâmica, voltada para o público gamer. Pode usar termos do universo dos jogos, mas sem perder a clareza jornalística.",
+    "anime": "Use uma linguagem animada e entusiasmada, voltada para os fãs de animes e mangás. Destaque a emoção das histórias, os estúdios e o impacto na comunidade otaku.",
+    "movie": "Use uma linguagem de crítico de cinema: analítica, envolvente e focada em enredo, direção, elenco e impacto cultural ou de bilheteria."
+}
 
 PROMPT = """Você é jornalista do site "Órbita" e escreve em português do Brasil.
 Abaixo estão uma ou mais fontes sobre o mesmo assunto, algumas em inglês. Use SOMENTE o que está nelas.
-Os trechos às vezes vêm misturados com menus, links e textos de navegação do site (por exemplo "Archive Submissions Index Search Calendar RSS"). Ignore tudo isso e aproveite só o conteúdo da notícia.
+Os trechos às vezes vêm misturados com menus, links e textos de navegação do site. Ignore tudo isso e aproveite só o conteúdo da notícia.
+
+DIRETRIZ DE ESTILO PARA ESTA NOTÍCIA:
+{estilo_especifico}
 
 {fontes}
 
 Responda ESTRITAMENTE neste formato, sem markdown e sem texto extra:
 TITULO_TRADUZIDO: título em português (se o original já está em português, repita-o)
-RESUMO: Escreva 1 parágrafo curto e direto (cerca de 3 frases) explicando o que aconteceu.
+RESUMO: Escreva 1 parágrafo curto e direto (cerca de 3 frases) explicando o que aconteceu, já aplicando o estilo pedido acima.
 CONTEXTO: Escreva 2 parágrafos separados por uma linha em branco. O primeiro explica o impacto imediato (o que muda na prática). O segundo traz o cenário geral (use conhecimento de mundo para explicar o que é a empresa/jogo, sem inventar fatos).
 
-Regras: tom factual e neutro, sem opinião própria. Se a notícia envolver acusação, processo ou investigação, relate só o que as fontes informam e deixe claro que são alegações. Não invente números, datas, nomes nem citações."""
+Regras: tom factual e neutro (mesmo com o estilo específico), sem opinião própria. Se a notícia envolver acusação, processo ou investigação, relate só o que as fontes informam e deixe claro que são alegações. Não invente números, datas, nomes nem citações."""
 
 def _secao(texto, rotulo, seguintes):
     """Pega o texto que vem depois de 'ROTULO:' até o próximo rótulo."""
@@ -42,12 +48,19 @@ def _secao(texto, rotulo, seguintes):
 
 def processar_noticia(fontes):
     """Recebe a lista de fontes de uma história e devolve titulo_pt, resumo_ia e contexto_ia (ou None)."""
+    
+    # Pega a categoria da primeira fonte para saber qual estilo usar
+    categoria = fontes[0].get("categoria", "tech")
+    estilo = ESTILOS.get(categoria, "Use uma linguagem jornalística neutra, clara e direta.")
+
     bloco = "\n\n".join(
         f'FONTE {i}: {f["fonte"]} (idioma: {"inglês" if f["idioma"] == "en" else "português"})\n'
         f'Título: {f["titulo"]}\nTrecho: {f["trecho"] or "(sem trecho)"}'
         for i, f in enumerate(fontes, 1)
     )
-    prompt = PROMPT.format(fontes=bloco)
+    
+    # Injeta o estilo específico no prompt
+    prompt = PROMPT.format(estilo_especifico=estilo, fontes=bloco)
 
     for tentativa in range(3):
         try:
