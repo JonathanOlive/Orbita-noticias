@@ -38,6 +38,12 @@ FONTES_NA_IA = 3          # quantas fontes de cada história a IA lê
 # palavras em comum no título e a semelhança passar de LIMIAR.
 LIMIAR = 0.30
 MIN_PALAVRAS = 3
+# Palavras que fazem o script ignorar a notícia automaticamente (promoções, jogos de azar, etc)
+PALAVRAS_PROIBIDAS = [
+    "black friday", "black november", "lotofácil", "quina", "mega-sena", 
+    "promoção", "desconto", "cupom", "ofertas", "achados", "vale tudo", 
+    "preço", "barato", "por apenas", "review"
+]
 
 # Os nomes das categorias (tech, sci, game, anime, movie) são os mesmos do site.
 FEEDS = {
@@ -176,6 +182,11 @@ def ler_feed(xml_bytes, fonte, idioma, categoria):
     artigos = []
     for item in itens[:MAX_POR_FEED]:
         titulo = limpar(campo(item, "title"))
+         # --- FILTRO DE LIXO ---
+        titulo_minusculo = titulo.lower()
+        if any(p in titulo_minusculo for p in PALAVRAS_PROIBIDAS):
+            continue # Pula essa notícia e vai para a próxima
+        # ----------------------
         link = achar_link(item)
         data = achar_data(item)
         if not (titulo and link and data) or data < limite:
