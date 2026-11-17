@@ -1,0 +1,57 @@
+name: Atualizar Site da Órbita
+
+on:
+  schedule:
+    # Roda todos os dias às 9:00 UTC (6:00 da manhã no horário de Brasília)
+    - cron: '0 9 * * *'
+  workflow_dispatch: # Permite rodar manualmente pelo botão no GitHub
+
+# Permissões necessárias para publicar no GitHub Pages[reference:1]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Garante que apenas um deploy aconteça por vez[reference:2]
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências
+        run: pip install groq
+
+      - name: Rodar o coletor
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python coletar.py
+
+      - name: Gerar o site
+        run: python gerar_site.py
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: Fazer upload dos arquivos do site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # A pasta que contém o index.html e os dados
+          path: 'site'
+
+      - name: Fazer o deploy no GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

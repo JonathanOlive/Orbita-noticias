@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Órbita | Tecnologia, ciência, games, animes e filmes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#05060d; --surface:#0d1020; --surface2:#141831; --line:#262b52;
+  --text:#e8ebff; --muted:#8e94c2;
+  --tech:#5ef2ff; --sci:#a596ff; --game:#ff5fa8; --anime:#ffb454; --movie:#8bf5a8;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:400 16px/1.6 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg::before{content:"";position:absolute;left:-20%;right:-20%;bottom:-10%;height:70%;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:56px 56px;transform:perspective(500px) rotateX(62deg);transform-origin:50% 100%;opacity:.3;
+  mask-image:linear-gradient(to top,#000 10%,transparent 85%);-webkit-mask-image:linear-gradient(to top,#000 10%,transparent 85%)}
+.bg::after{content:"";position:absolute;top:-30%;left:50%;width:900px;height:700px;max-width:140%;transform:translateX(-50%);
+  background:radial-gradient(closest-side,rgba(94,242,255,.14),rgba(165,150,255,.07) 55%,transparent);animation:glow 2.4s ease-out both}
+@keyframes glow{from{opacity:0;transform:translateX(-50%) scale(.6)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+.wrap{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:0 20px 64px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 0}
+.brand{font:600 20px/1 Unbounded,"IBM Plex Sans",sans-serif;letter-spacing:.02em;display:flex;align-items:center;gap:12px}
+.orb{width:22px;height:22px;border-radius:50%;border:2px solid var(--tech);position:relative}
+.orb::after{content:"";position:absolute;width:7px;height:7px;border-radius:50%;background:var(--game);top:-4px;right:1px;box-shadow:0 0 10px var(--game)}
+.status{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--tech);box-shadow:0 0 10px var(--tech)}
+h1{font:600 clamp(26px,4.4vw,44px)/1.15 Unbounded,"IBM Plex Sans",sans-serif;margin:24px 0 24px;max-width:22ch;letter-spacing:-.01em}
+
+/* carrossel */
+.slider{position:relative;border:1px solid var(--line);border-radius:20px;overflow:hidden;height:clamp(280px,42vw,400px);margin-bottom:28px;background:var(--surface)}
+.slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .6s,visibility .6s;display:flex;align-items:flex-end;text-align:left;
+  width:100%;padding:0;border:0;color:inherit;font:inherit;cursor:pointer;background:none}
+.slide.on{opacity:1;visibility:visible}
+.slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.slide::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(5,6,13,.95) 8%,rgba(5,6,13,.55) 50%,rgba(5,6,13,.1))}
+.slide .txt{position:relative;z-index:1;padding:28px 28px 56px;max-width:640px}
+.slide h2{font:600 clamp(20px,3.2vw,32px)/1.2 Unbounded,"IBM Plex Sans",sans-serif;margin:8px 0 10px}
+.slide p{margin:0;color:#c3c8ee}
+.sl-ctl{position:absolute;z-index:2;left:28px;right:28px;bottom:18px;display:flex;align-items:center;gap:10px}
+.sl-dots{display:flex;gap:8px;flex:1}
+.sl-dots button{width:10px;height:10px;border-radius:999px;border:0;padding:0;background:var(--line);cursor:pointer;transition:width .3s,background .3s}
+.sl-dots button[aria-current="true"]{width:30px;background:var(--tech)}
+.sl-arrow{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:rgba(13,16,32,.8);color:var(--text);cursor:pointer;font-size:16px}
+.sl-arrow:hover{border-color:var(--tech)}
+.sl-label{font-size:13px;color:var(--muted);margin:0 0 10px}
+
+/* filtros */
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:0 0 24px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:500 14px/1 "IBM Plex Sans",sans-serif;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:11px 16px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;transition:border-color .2s,background .2s}
+.chip i{width:8px;height:8px;border-radius:50%;background:var(--c,var(--muted));display:inline-block}
+.chip small{color:var(--muted);font-size:12px}
+.chip:hover{border-color:var(--c,var(--muted))}
+.chip[aria-pressed="true"]{background:var(--surface2);border-color:var(--c,var(--text))}
+.search{flex:1 1 220px;min-width:180px}
+.search input{width:100%;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:12px 14px;font:400 15px "IBM Plex Sans",sans-serif}
+.search input::placeholder{color:var(--muted)}
+button:focus-visible,.search input:focus-visible{outline:2px solid var(--tech);outline-offset:2px}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+.card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;padding:0;text-align:left;color:inherit;font:inherit;cursor:pointer;
+  display:flex;flex-direction:column;transition:border-color .2s,transform .2s}
+.card:hover{border-color:var(--c);transform:translateY(-2px)}
+.card .img{aspect-ratio:16/9;width:100%;display:block;object-fit:cover;border-bottom:2px solid var(--c)}
+.card .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
+.card h3{font:500 18px/1.35 "IBM Plex Sans",sans-serif;margin:0}
+.card p{margin:0;color:var(--muted);font-size:15px;flex:1}
+.cat{font-size:13px;font-weight:500;color:var(--c)}
+.meta{font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:12px}
+.empty{border:1px dashed var(--line);border-radius:14px;padding:32px;color:var(--muted);text-align:center}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+.tech{--c:var(--tech)} .sci{--c:var(--sci)} .game{--c:var(--game)} .anime{--c:var(--anime)} .movie{--c:var(--movie)}
+
+/* navegação */
+header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(5,6,13,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.bar{max-width:1120px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:16px}
+.bar-l,.bar-r{flex:1;display:flex;align-items:center;min-width:0}
+.bar-r{justify-content:flex-end;gap:14px}
+.bar .brand{flex:none;color:var(--text);text-decoration:none}
+.bar-r .search{flex:1 1 0;min-width:0;max-width:240px}
+.menu-btn{font:500 14px/1 "IBM Plex Sans",sans-serif;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px 14px;display:inline-flex;align-items:center;gap:10px;cursor:pointer}
+.menu-btn:hover{border-color:var(--tech)}
+.burger{width:16px;height:2px;background:currentColor;position:relative;display:inline-block}
+.burger::before,.burger::after{content:"";position:absolute;left:0;width:16px;height:2px;background:currentColor}
+.burger::before{top:-5px}.burger::after{top:5px}
+.secs{max-width:1120px;margin:0 auto;padding:0 20px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.secs::-webkit-scrollbar{display:none}
+.secs a{display:inline-flex;align-items:center;gap:8px;padding:12px 14px;color:var(--muted);text-decoration:none;font:500 14px/1 "IBM Plex Sans",sans-serif;border-bottom:2px solid transparent;white-space:nowrap}
+.secs a:hover{color:var(--text)}
+.secs a[aria-current="page"]{color:var(--text);border-bottom-color:var(--c,var(--tech))}
+.secs i,.dr-t i{width:8px;height:8px;border-radius:50%;background:var(--c);display:inline-block}
+a:focus-visible,.menu-btn:focus-visible,.dr-x:focus-visible{outline:2px solid var(--tech);outline-offset:2px}
+.lead{color:var(--muted);margin:-8px 0 24px;max-width:56ch;font-size:17px}
+.scrim{position:fixed;inset:0;z-index:40;background:rgba(3,4,10,.7)}
+.drawer{position:fixed;top:0;bottom:0;left:0;z-index:50;width:min(340px,86vw);background:var(--surface);border-right:1px solid var(--line);transform:translateX(-102%);visibility:hidden;transition:transform .3s,visibility .3s;padding:calc(env(safe-area-inset-top,0px) + 18px) 16px 24px;overflow:auto}
+.drawer.open{transform:none;visibility:visible}
+.dr-top{display:flex;align-items:center;justify-content:space-between;margin:0 4px 18px}
+.dr-x{font:500 14px "IBM Plex Sans",sans-serif;background:var(--surface2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 14px;cursor:pointer}
+.dr-link{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:14px 12px;border-radius:12px;text-decoration:none;color:var(--text);border:1px solid transparent}
+.dr-link:hover{background:var(--surface2);border-color:var(--line)}
+.dr-t{font-weight:500;display:flex;align-items:center;gap:10px}
+.dr-link small{grid-column:1;color:var(--muted);font-size:13px}
+.dr-link em{grid-row:1/3;grid-column:2;font-style:normal;color:var(--muted);font-size:13px;align-self:center}
+.dr-sep{height:1px;background:var(--line);margin:10px 4px}
+@media (max-width:860px){.status{display:none}}
+@media (max-width:560px){.menu-btn .lbl{display:none}.bar{gap:10px;padding:10px 14px}.secs{padding:0 10px}}
+/* página da notícia */
+[hidden]{display:none!important}
+.back{font:500 14px "IBM Plex Sans",sans-serif;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 16px;cursor:pointer;margin:8px 0 22px}
+.back:hover{border-color:var(--tech)}
+.art{max-width:760px}
+.hero-img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;border:1px solid var(--line);border-bottom:3px solid var(--c);display:block;margin-bottom:20px}
+.art-t{font:600 clamp(24px,4vw,38px)/1.2 Unbounded,"IBM Plex Sans",sans-serif;margin:8px 0 12px;max-width:none}
+.art h2{font:600 18px/1.3 Unbounded,"IBM Plex Sans",sans-serif;margin:32px 0 12px}
+.art p{color:#c3c8ee;max-width:68ch;margin:0 0 14px}
+.video{display:flex;align-items:center;justify-content:center;gap:16px;aspect-ratio:16/9;max-height:360px;width:100%;border:1px solid var(--line);border-radius:16px;background:linear-gradient(135deg,var(--surface2),var(--surface));margin:22px 0;color:var(--text)}
+.play{width:64px;height:64px;border-radius:50%;border:2px solid var(--c);color:var(--c);display:grid;place-items:center;font-size:22px;flex:none}
+.video small{display:block;font-size:13px;color:var(--muted)}
+.srcs{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.srcs li{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:12px;padding:14px 16px}
+.srcs .sname{font-weight:500}
+.srcs p{margin:4px 0 8px;font-size:15px;color:var(--muted)}
+.lnk{font-size:13px;color:var(--c);text-decoration:underline;text-underline-offset:3px}
+.art .art-note{font-size:13px;color:var(--muted);margin-top:28px;border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:560px){.slide .txt{padding:20px 20px 56px}.sl-ctl{left:20px;right:20px}.sl-arrow{display:none}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (min-width:0){
+.more{grid-column:1/-1;justify-self:center;font:500 14px "IBM Plex Sans",sans-serif;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:13px 22px;cursor:pointer}
+.more:hover{border-color:var(--tech)}
+.vid{position:relative;aspect-ratio:16/9;width:100%;border-radius:16px;overflow:hidden;border:1px solid var(--line);margin:22px 0;background:var(--surface)}
+.vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.tag{font-size:12px;font-weight:400;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 8px;margin-left:6px}
+.srcs a.lnk{display:inline-block}
+.srcs p strong{font-weight:500;color:var(--text)}
+}
+@media (min-width:0){
+.blk{margin:0 0 44px}
+.blk-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 16px;flex-wrap:wrap}
+.blk-h h2{font:600 20px/1.2 Unbounded,"IBM Plex Sans",sans-serif;margin:0;display:flex;align-items:center;gap:12px}
+.blk-h i{width:10px;height:10px;border-radius:50%;background:var(--c);display:inline-block}
+.blk-h a{color:var(--c);text-decoration:none;font-size:14px}
+.blk-h a:hover{text-decoration:underline;text-underline-offset:3px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+.day{grid-column:1/-1;margin:12px 0 0;padding-bottom:8px;color:var(--muted);font-size:14px;border-bottom:1px solid var(--line)}
+}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+<header class="site">
+  <div class="bar">
+    <div class="bar-l"><button class="menu-btn" type="button" id="menuBtn" aria-expanded="false" aria-controls="drawer"><span class="burger"></span><span class="lbl">Menu</span></button></div>
+    <a class="brand" href="#inicio"><span class="orb"></span>Órbita</a>
+    <div class="bar-r">
+      <span class="status"><span class="dot"></span><span id="upd">Atualizado agora</span></span>
+      <label class="search"><input id="q" type="search" placeholder="Buscar" aria-label="Buscar notícias"></label>
+    </div>
+  </div>
+  <nav class="secs" id="nav" aria-label="Seções"></nav>
+</header>
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" aria-label="Menu principal" aria-hidden="true">
+  <div class="dr-top"><span class="brand"><span class="orb"></span>Órbita</span><button class="dr-x" type="button" id="drX">Fechar</button></div>
+  <nav id="drNav" aria-label="Seções"></nav>
+</aside>
+<div class="wrap">
+
+  <div id="home">
+  <div id="homeHead"></div>
+
+  <div id="sliderBox"></div>
+
+  <div id="grid"></div>
+  </div>
+  <div id="page" hidden></div>
+
+  <footer>Notícias reunidas de feeds públicos. Cada matéria pertence ao veículo que a publicou, e os links levam à publicação original.</footer>
+</div>
+
+
+
+<script src="dados/semana.js"></script>
+<script>
+var CATS=[
+  {id:"all",name:"Tudo",cls:""},
+  {id:"tech",name:"Tecnologia",cls:"tech",col:"#5ef2ff"},
+  {id:"sci",name:"Ciência",cls:"sci",col:"#a596ff"},
+  {id:"game",name:"Games",cls:"game",col:"#ff5fa8"},
+  {id:"anime",name:"Animes",cls:"anime",col:"#ffb454"},
+  {id:"movie",name:"Filmes",cls:"movie",col:"#8bf5a8"}
+];
+var CAT_IDS=["tech","sci","game","anime","movie"];
+var DADOS=window.SEMANA||{historias:[],destaques:[],arq:{}};
+var NEWS=[],BYID={},HAS={},ARQSTATE={},ALLDONE=false,PAGE=24,shown=PAGE,per="semana";
+var cat="all",query="",idx=0,timer=null,paused=false,lastY=0,came=false,wasArt=false,TITLE=document.title;
+var grid=document.getElementById("grid"),box=document.getElementById("sliderBox"),home=document.getElementById("home"),page=document.getElementById("page");
+var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function catOf(id){return CATS.filter(function(c){return c.id===id})[0]}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function cut(t,n){t=t||"";if(t.length<=n)return t;var c=t.slice(0,n);return c.slice(0,Math.max(c.lastIndexOf(" "),n-30))+"…"}
+function safeUrl(u){return /^https?:\/\//i.test(u||"")?u:""}
+function ago(iso){var m=Math.max(1,Math.round((Date.now()-new Date(iso).getTime())/60000));if(m<60)return "há "+m+" min";var h=Math.round(m/60);if(h<24)return "há "+h+(h===1?" hora":" horas");var d=Math.round(h/24);return "há "+d+(d===1?" dia":" dias")}
+function dayLabel(iso){
+  var d=new Date(iso),n=new Date(),a=new Date(d.getFullYear(),d.getMonth(),d.getDate()),b=new Date(n.getFullYear(),n.getMonth(),n.getDate()),k=Math.round((b-a)/864e5);
+  if(k<=0)return "Hoje";if(k===1)return "Ontem";
+  return d.toLocaleDateString("pt-BR",{day:"numeric",month:"long"})+(d.getFullYear()!==n.getFullYear()?" de "+d.getFullYear():"");
+}
+
+/* dados: a semana vem no carregamento; o arquivo de cada seção só quando for preciso */
+function mk(h,old){
+  var f=h.fontes[0];
+  var txt = h.resumo_ia ? h.resumo_ia : f.trecho;
+  return {id:h.id,c:h.categoria,t:h.titulo,s:cut(txt,170),src:f.fonte,date:h.publicado,img:safeUrl(h.imagem),vid:h.video,f:h.fontes,seed:parseInt(h.id.slice(0,4),16),old:old,resumo_ia:h.resumo_ia,contexto_ia:h.contexto_ia}
+}
+function reindex(){NEWS.sort(function(a,b){return a.date<b.date?1:-1});BYID={};NEWS.forEach(function(n,i){BYID[n.id]=i})}
+function addStories(list,old){var add=false;list.forEach(function(h){if(!HAS[h.id]){HAS[h.id]=1;NEWS.push(mk(h,old));add=true}});if(add)reindex()}
+function loadArq(list,done){
+  var left=list.length;if(!left){done();return}
+  function one(){if(--left===0)done()}
+  list.forEach(function(c){
+    var st=ARQSTATE[c];
+    if(st&&st.ok){one();return}
+    if(st){st.cbs.push(one);return}
+    st=ARQSTATE[c]={ok:false,cbs:[one]};
+    var s=document.createElement("script");s.src="dados/arq-"+c+".js";
+    function fin(){st.ok=true;addStories((window.ARQ&&window.ARQ[c])||[],true);var f=st.cbs;st.cbs=[];f.forEach(function(g){g()})}
+    s.onload=fin;s.onerror=fin;document.head.appendChild(s);
+  });
+}
+function ensureAll(cb){if(ALLDONE){cb();return}loadArq(CAT_IDS,function(){ALLDONE=true;cb()})}
+
+/* imagens de exemplo geradas por código; na versão real vêm da própria notícia */
+function art(c,seed){
+  var col=catOf(c).col,s=seed*7+3,i,o="";
+  function r(){s=(s*9301+49297)%233280;return s/233280}
+  if(c==="tech"){for(i=0;i<14;i++){var x=r()*600,y=r()*320;o+='<path d="M'+x+' '+y+'h'+(40+r()*80)+'v'+(30+r()*60)+'" stroke="'+col+'" stroke-width="2" fill="none" opacity=".55"/><circle cx="'+x+'" cy="'+y+'" r="5" fill="'+col+'"/>'}}
+  else if(c==="sci"){for(i=1;i<6;i++)o+='<ellipse cx="320" cy="180" rx="'+(i*55)+'" ry="'+(i*22)+'" transform="rotate('+(r()*60-30)+' 320 180)" stroke="'+col+'" fill="none" opacity=".5"/>';for(i=0;i<40;i++)o+='<circle cx="'+r()*640+'" cy="'+r()*360+'" r="'+(0.8+r()*1.8)+'" fill="#fff" opacity=".8"/>';o+='<circle cx="320" cy="180" r="26" fill="'+col+'" opacity=".9"/>'}
+  else if(c==="game"){for(i=0;i<16;i++){var z=14+r()*46;o+='<rect x="'+r()*600+'" y="'+r()*320+'" width="'+z+'" height="'+z+'" transform="rotate(45 '+r()*600+' '+r()*320+')" stroke="'+col+'" stroke-width="2" fill="'+(r()>.6?col:"none")+'" opacity=".55"/>'}}
+  else if(c==="anime"){var cx=100+r()*440,cy=120+r()*120;for(i=0;i<48;i++){var a=i/48*6.283;o+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+Math.cos(a)*900)+'" y2="'+(cy+Math.sin(a)*900)+'" stroke="'+col+'" stroke-width="'+(1+r()*3)+'" opacity="'+(.2+r()*.4)+'"/>'}o+='<circle cx="'+cx+'" cy="'+cy+'" r="34" fill="#05060d" stroke="'+col+'" stroke-width="3"/>'}
+  else{o+='<polygon points="320,-10 120,380 520,380" fill="'+col+'" opacity=".22"/>';for(i=0;i<8;i++)o+='<rect x="'+(i*84)+'" y="332" width="56" height="28" rx="4" fill="'+col+'" opacity=".35"/>';o+='<circle cx="'+(180+r()*280)+'" cy="'+(90+r()*80)+'" r="'+(24+r()*30)+'" stroke="'+col+'" stroke-width="3" fill="none"/>'}
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice"><defs><radialGradient id="g" cx="50%" cy="40%" r="75%"><stop offset="0" stop-color="'+col+'" stop-opacity=".28"/><stop offset="1" stop-color="#0d1020"/></radialGradient></defs><rect width="640" height="360" fill="url(#g)"/>'+o+'</svg>';
+  return "data:image/svg+xml;utf8,"+encodeURIComponent(svg);
+}
+
+/* imagem da matéria; se não houver ou falhar, entra a ilustração */
+function pic(n,cls){var s=n.img||art(n.c,n.seed);return '<img'+(cls?' class="'+cls+'"':'')+' alt="" loading="lazy" referrerpolicy="no-referrer" data-c="'+n.c+'" data-s="'+n.seed+'" src="'+esc(s)+'">'}
+document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&t.dataset&&t.dataset.c&&!t.dataset.fb){t.dataset.fb=1;t.src=art(t.dataset.c,+t.dataset.s)}},true);
+
+/* menus: barra de seções e menu lateral */
+var DESC={tech:"Chips, IA, internet e dispositivos.",sci:"Espaço, saúde, clima e descobertas.",game:"Lançamentos, atualizações e indústria.",anime:"Estreias, temporadas e mangás.",movie:"Estreias e apostas de bilheteria."};
+var SLUG={all:"inicio",tech:"tecnologia",sci:"ciencia",game:"games",anime:"animes",movie:"filmes"};
+var BY_SLUG={};Object.keys(SLUG).forEach(function(k){BY_SLUG[SLUG[k]]=k});
+function cnt(id){return NEWS.filter(function(n){return !n.old&&(id==="all"||n.c===id)}).length}
+function drawNav(){
+  var a="",d="";
+  CATS.forEach(function(c){
+    var on=cat===c.id&&page.hidden,dot=c.id==="all"?"":"<i></i>";
+    a+='<a class="'+c.cls+'" href="#'+SLUG[c.id]+'"'+(on?' aria-current="page"':'')+'>'+dot+esc(c.name)+'</a>';
+    d+='<a class="dr-link '+c.cls+'" href="#'+SLUG[c.id]+'"><span class="dr-t">'+dot+esc(c.name)+'</span><small>'+(c.id==="all"?"Todas as notícias":DESC[c.id])+'</small><em>'+cnt(c.id)+'</em></a>';
+  });
+  document.getElementById("nav").innerHTML=a;
+  document.getElementById("drNav").innerHTML=d+'<div class="dr-sep"></div><a class="dr-link" href="#inicio" data-top="1"><span class="dr-t">Destaques da semana</span><small>As principais notícias em carrossel</small></a>';
+}
+function drawHead(){
+  var h=document.getElementById("homeHead");
+  h.innerHTML=cat==="all"?'<h1>O que está mudando em tecnologia, ciência, games, animes e filmes.</h1>':'<h1>'+esc(catOf(cat).name)+'</h1><p class="lead">'+esc(DESC[cat])+'</p>';
+}
+var drawer=document.getElementById("drawer"),scrim=document.getElementById("scrim"),mbtn=document.getElementById("menuBtn");
+function menu(o){
+  drawer.classList.toggle("open",o);drawer.setAttribute("aria-hidden",String(!o));scrim.hidden=!o;
+  mbtn.setAttribute("aria-expanded",String(o));document.body.style.overflow=o?"hidden":"";
+  if(o)document.getElementById("drX").focus();
+}
+mbtn.onclick=function(){menu(true)};
+scrim.onclick=function(){menu(false)};
+document.getElementById("drX").onclick=function(){menu(false);mbtn.focus()};
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&drawer.classList.contains("open")){menu(false);mbtn.focus()}});
+document.addEventListener("click",function(e){if(e.target.closest("header.site a, #drNav a"))lastY=0});
+document.getElementById("drNav").addEventListener("click",function(e){
+  var a=e.target.closest("a");if(!a)return;menu(false);
+  if(a.dataset.top){query="";document.getElementById("q").value="";if(page.hidden)draw();setTimeout(function(){var el=document.querySelector(".sl-label");if(el)el.scrollIntoView({behavior:"smooth"})},80)}
+});
+
+/* página de cada notícia, com endereço próprio (#noticia-ID) */
+function goto(id){lastY=window.scrollY;came=true;location.hash="noticia-"+id}
+function articleView(i){
+  var n=NEWS[i],c=catOf(n.c),fs=n.f,multi=fs.length>1;
+  var h='<button class="back" type="button" id="bk">&#8592; Voltar às notícias</button><article class="art '+c.cls+'">'+pic(n,"hero-img")+'<div class="cat">'+esc(c.name)+'</div><h1 class="art-t">'+esc(n.t)+'</h1><div class="meta" style="justify-content:flex-start;gap:20px"><span>Publicada '+ago(n.date)+'</span><span>'+fs.length+(multi?' fontes':' fonte')+'</span></div>';
+  var textoResumo = n.resumo_ia ? n.resumo_ia : (fs[0].trecho||"Esta fonte não publicou um trecho. Leia a matéria completa pelo link abaixo.");
+  h+='<h2>Resumo</h2><p>'+esc(textoResumo).replace(/\n/g, '<br><br>')+'</p>';
+  if(n.contexto_ia){
+    h+='<h2>Por que isso importa</h2><p>'+esc(n.contexto_ia).replace(/\n/g, '<br><br>')+'</p>';
+  }  var v=/youtube\.com\/watch\?v=([\w-]{11})/.exec(n.vid||"");
+  if(v)h+='<div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/'+v[1]+'" title="Vídeo da matéria" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>';
+  h+='<h2>'+(multi?'O que cada fonte publicou':'Fonte')+'</h2><ul class="srcs">';
+  fs.forEach(function(f){var u=safeUrl(f.link);
+    h+='<li><div class="sname">'+esc(f.fonte)+(f.idioma==="en"?' <span class="tag">em inglês</span>':'')+'</div><p><strong>'+esc(f.titulo)+'</strong></p>'+(multi&&f.trecho?'<p>'+esc(cut(f.trecho,300))+'</p>':'')+(u?'<a class="lnk" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Ler a matéria completa em '+esc(f.fonte)+'</a>':'')+'</li>'});
+  return h+'</ul><p class="art-note">A Órbita reúne manchetes e trechos de feeds públicos e sempre aponta para a publicação original, onde está a matéria completa. Resumos e comentários próprios chegam na próxima etapa.</p></article>';
+}
+function route(){
+  var m=/^#noticia-([a-f0-9]+)$/.exec(location.hash);
+  if(m){
+    var i=BYID[m[1]];
+    if(i===undefined&&!ALLDONE){ensureAll(route);return}
+    if(i!==undefined){
+      clearInterval(timer);wasArt=true;home.hidden=true;page.hidden=false;
+      page.innerHTML=articleView(i);document.title=NEWS[i].t+" | Órbita";
+      document.getElementById("bk").onclick=function(){if(came){history.back()}else{location.hash=""}};
+      drawNav();window.scrollTo(0,0);return;
+    }
+  }
+  var nc=BY_SLUG[location.hash.slice(1)]||"all";
+  if(wasArt||nc!==cat){
+    var y=wasArt&&nc===cat?lastY:0;
+    wasArt=false;came=false;if(nc!==cat){shown=PAGE;per="semana"}
+    cat=nc;page.hidden=true;page.innerHTML="";home.hidden=false;document.title=TITLE;
+    draw();window.scrollTo(0,y);
+  }
+}
+window.addEventListener("hashchange",route);
+
+/* carrossel com os destaques da semana */
+function tops(){return (DADOS.destaques||[]).map(function(id){return BYID[id]}).filter(function(i){return i!==undefined}).slice(0,5).map(function(i){return NEWS[i]})}
+function show(k){
+  var sl=box.querySelectorAll(".slide"),ds=box.querySelectorAll(".sl-dots button");
+  idx=(k+sl.length)%sl.length;
+  sl.forEach(function(s,j){s.classList.toggle("on",j===idx);s.setAttribute("aria-hidden",String(j!==idx));s.tabIndex=j===idx?0:-1});
+  ds.forEach(function(d,j){d.setAttribute("aria-current",String(j===idx))});
+}
+function play(){clearInterval(timer);if(!reduce)timer=setInterval(function(){if(!paused)show(idx+1)},6000)}
+function drawSlider(){
+  clearInterval(timer);
+  if(cat!=="all"||query.trim()){box.innerHTML="";return}
+  var t=tops();if(!t.length){box.innerHTML="";return}
+  var h='<p class="sl-label">Destaques da semana</p><section class="slider" aria-roledescription="carrossel" aria-label="Principais notícias da semana">';
+  t.forEach(function(n,j){var c=catOf(n.c);
+    h+='<button type="button" class="slide '+c.cls+(j===0?" on":"")+'" data-id="'+n.id+'">'+pic(n)+'<div class="txt"><div class="cat">'+esc(c.name)+'</div><h2>'+esc(n.t)+'</h2><p>'+esc(n.s)+'</p></div></button>'});
+  h+='<div class="sl-ctl"><div class="sl-dots">';
+  t.forEach(function(n,j){h+='<button type="button" aria-label="Ir para o destaque '+(j+1)+'" aria-current="'+(j===0)+'" data-j="'+j+'"></button>'});
+  h+='</div><button class="sl-arrow" type="button" aria-label="Destaque anterior" id="prv">&#8592;</button><button class="sl-arrow" type="button" aria-label="Próximo destaque" id="nxt">&#8594;</button></div></section>';
+  box.innerHTML=h;idx=0;
+  box.querySelectorAll(".slide").forEach(function(s){s.onclick=function(){goto(s.dataset.id)}});
+  box.querySelectorAll(".sl-dots button").forEach(function(d){d.onclick=function(){show(+d.dataset.j);play()}});
+  document.getElementById("prv").onclick=function(){show(idx-1);play()};
+  document.getElementById("nxt").onclick=function(){show(idx+1);play()};
+  var sec=box.querySelector(".slider");
+  sec.addEventListener("mouseenter",function(){paused=true});sec.addEventListener("mouseleave",function(){paused=false});
+  sec.addEventListener("focusin",function(){paused=true});sec.addEventListener("focusout",function(){paused=false});
+  show(0);play();
+}
+
+/* lista de notícias: blocos na inicial, arquivo com período na seção */
+function card(n){var c=catOf(n.c);return '<button type="button" class="card '+c.cls+'" data-id="'+n.id+'">'+pic(n,"img")+'<div class="body"><div class="cat">'+esc(c.name)+(n.f.length>1?' <span class="tag">'+n.f.length+' fontes</span>':'')+'</div><h3>'+esc(n.t)+'</h3><p>'+esc(n.s)+'</p><div class="meta"><span>'+esc(n.src)+'</span><span>'+ago(n.date)+'</span></div></div></button>'}
+function cards(list,sep){
+  var h='<div class="grid">',last="";
+  list.slice(0,shown).forEach(function(n){
+    if(sep){var d=dayLabel(n.date);if(d!==last){h+='<div class="day">'+esc(d)+'</div>';last=d}}
+    h+=card(n)});
+  if(list.length>shown)h+='<button type="button" class="more" data-act="more">Mostrar mais ('+(list.length-shown)+')</button>';
+  return h+'</div>';
+}
+function drawFeed(){
+  var q=query.trim().toLowerCase(),h="";
+  if(q){
+    if(!ALLDONE)ensureAll(function(){if(query.trim())drawFeed()});
+    var r=NEWS.filter(function(n){return (cat==="all"||n.c===cat)&&(n.t+" "+n.s+" "+n.src).toLowerCase().indexOf(q)>-1});
+    grid.innerHTML=r.length?'<p class="lead" style="margin-top:0">'+r.length+(r.length===1?' resultado':' resultados')+(ALLDONE?'':' até agora. Buscando também nas notícias antigas…')+'</p>'+cards(r,false):'<div class="empty">Nenhuma notícia encontrada. Tente outra palavra.</div>';
+    return;
+  }
+  if(cat==="all"){
+    CAT_IDS.forEach(function(id){
+      var c=catOf(id),l=NEWS.filter(function(n){return !n.old&&n.c===id}).slice(0,6);
+      if(!l.length)return;
+      h+='<section class="blk '+c.cls+'"><div class="blk-h"><h2><i></i>'+esc(c.name)+'</h2><a href="#'+SLUG[id]+'">Ver tudo em '+esc(c.name)+'</a></div><div class="grid">'+l.map(card).join("")+'</div></section>';
+    });
+    grid.innerHTML=h||'<div class="empty">Ainda não há notícias. Rode o coletar.py e depois o gerar_site.py.</div>';
+    return;
+  }
+  var temArq=((DADOS.arq||{})[cat]||0)>0;
+  h+='<div class="tabs" role="group" aria-label="Período">';
+  [["semana","Esta semana"],["mes","Últimos 30 dias"],["todas","Todas"]].forEach(function(p){
+    if(p[0]!=="semana"&&!temArq)return;
+    h+='<button type="button" class="chip" data-per="'+p[0]+'" aria-pressed="'+(per===p[0])+'">'+p[1]+'</button>'});
+  h+='</div>';
+  if(per!=="semana"&&!(ARQSTATE[cat]&&ARQSTATE[cat].ok)){
+    grid.innerHTML=h+'<div class="empty">Carregando o arquivo…</div>';
+    loadArq([cat],function(){if(!query.trim())drawFeed()});return;
+  }
+  var lim=Date.now()-30*864e5;
+  var l=NEWS.filter(function(n){return n.c===cat&&(per==="todas"||(per==="mes"?new Date(n.date).getTime()>=lim:!n.old))});
+  grid.innerHTML=h+(l.length?cards(l,true):'<div class="empty">Nenhuma notícia neste período.</div>');
+}
+function draw(){drawHead();drawNav();drawSlider();drawFeed()}
+
+grid.addEventListener("click",function(e){
+  var t=e.target.closest("[data-id],[data-per],[data-act]");if(!t)return;
+  if(t.dataset.id)goto(t.dataset.id);
+  else if(t.dataset.per){per=t.dataset.per;shown=PAGE;drawFeed()}
+  else{shown+=PAGE;drawFeed()}
+});
+document.getElementById("q").addEventListener("input",function(e){
+  query=e.target.value;shown=PAGE;
+  if(!page.hidden){came=false;location.hash="inicio"}else draw();
+});
+var upd=document.getElementById("upd");
+if(upd&&DADOS.gerado_em)upd.textContent="Atualizado em "+new Date(DADOS.gerado_em).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+addStories(DADOS.historias||[],false);
+draw();route();
+</script>
+</body>
+</html>
