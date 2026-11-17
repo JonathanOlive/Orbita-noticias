@@ -50,6 +50,10 @@ FEEDS = {
         ("NASA", "https://www.nasa.gov/feed/", "en"),
         ("Nature", "https://www.nature.com/nature.rss", "en"),
         ("Olhar Digital Ciência", "https://olhardigital.com.br/editorias/ciencia-e-espaco/feed/", "pt"),
+        ("Phys.org", "https://phys.org/rss-feed/", "en"),
+        ("Science Daily", "https://www.sciencedaily.com/rss/top/science.xml", "en"),
+        ("Nobel Prize", "https://www.nobelprize.org/feed/", "en"),
+        ("Folha Ciência", "https://feeds.folha.uol.com.br/ciencia/rss.xml", "pt"),
     ],
     "game": [
         ("Tecnoblog Jogos", "https://tecnoblog.net/tema/jogos/feed", "pt"),
@@ -58,6 +62,7 @@ FEEDS = {
     "anime": [
         ("Anime News Network", "https://www.animenewsnetwork.com/all/rss.xml", "en"),
         ("MyAnimeList", "https://myanimelist.net/rss/news.xml", "en"),
+        ("JBox", "https://www.jbox.com.br/feed/", "pt"),
     ],
     "movie": [
         ("Observatório do Cinema", "https://observatoriodocinema.uol.com.br/feed", "pt"),
