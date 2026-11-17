@@ -35,22 +35,21 @@ html,body{margin:0}
 body{background:var(--bg);color:var(--text);font:400 16px/1.6 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100%}
 
 /* --- FUNDO GEOMÉTRICO TECNOLÓGICO --- */
-/* --- FUNDO GEOMÉTRICO TECNOLÓGICO (MAIS VISÍVEL) --- */
+/* --- FUNDO GEOMÉTRICO TECNOLÓGICO (ROSA NEON) --- */
 .bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;display:block}
 
 .bg::before{
   content:"";position:absolute;left:-20%;right:-20%;bottom:-10%;height:80%;
-  /* Linhas em azul neon brilhante com opacidade maior */
-  background-image:linear-gradient(rgba(56, 189, 248, 0.3) 1px,transparent 1px),linear-gradient(90deg,rgba(56, 189, 248, 0.3) 1px,transparent 1px);
-  background-size:60px 60px;transform:perspective(600px) rotateX(65deg);transform-origin:50% 100%;
+  /* Usando a cor rosa da bolinha (f472b6) com mais opacidade */
+  background-image:linear-gradient(rgba(244, 114, 182, 0.2) 1px,transparent 1px),linear-gradient(90deg,rgba(244, 114, 182, 0.2) 1px,transparent 1px);
+  background-size:50px 50px;transform:perspective(600px) rotateX(65deg);transform-origin:50% 100%;
   mask-image:linear-gradient(to top,#000 20%,transparent 90%);-webkit-mask-image:linear-gradient(to top,#000 20%,transparent 90%)
 }
-
-/* Um brilho extra no centro */
 .bg::after{
   content:"";position:absolute;top:-20%;left:50%;width:1200px;height:800px;max-width:150%;transform:translateX(-50%);
-  background:radial-gradient(closest-side,rgba(56, 189, 248, 0.15),rgba(167, 139, 250, 0.05) 60%,transparent)
+  background:radial-gradient(closest-side,rgba(244, 114, 182, 0.1),rgba(167, 139, 250, 0.05) 60%,transparent)
 }
+/* ----------------------------------- */
 /* ----------------------------------- */
 /* ----------------------------------- */
 
@@ -147,11 +146,43 @@ header.site{position:sticky;top:0;z-index:20;background:rgba(17,26,58,.9);backdr
 .search input::placeholder{color:var(--muted)}
 .chip{font:500 14px/1 "IBM Plex Sans",sans-serif;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:10px 16px;cursor:pointer;transition:all .2s}
 .chip[aria-pressed="true"]{background:var(--surface2);border-color:var(--c);font-weight:600}
-.blk{margin:0 0 44px;position:relative;z-index:1;}
-.blk-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 16px;flex-wrap:wrap}
-.blk-h h2{font:600 24px/1.2 Unbounded,"IBM Plex Sans",sans-serif;margin:0;display:flex;align-items:center;gap:10px;color:#fff}
-.blk-h a{color:var(--c);text-decoration:none;font-size:15px;font-weight:600}
-.blk-h a:hover{text-decoration:underline}
+/* --- FAIXA POR SEÇÃO --- */
+.blk {
+  margin: 0 0 50px;
+  position: relative;
+  z-index: 1;
+  /* Cria a faixa lateral colorida para cada seção */
+  border-left: 6px solid var(--c);
+  border-radius: 0 12px 12px 0;
+  padding: 15px 15px 15px 20px; /* Espaçamento interno */
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, transparent 100%); /* Fundo leve */
+}
+
+.blk-h {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 20px;
+  flex-wrap: wrap;
+}
+
+.blk-h h2 {
+  font: 600 24px/1.2 Unbounded, "IBM Plex Sans", sans-serif;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+}
+
+.blk-h a {
+  color: var(--c);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+}
+.blk-h a:hover { text-decoration: underline; }
 footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;text-align:center;position:relative;z-index:1;}
 .tech{--c:var(--tech)} .sci{--c:var(--sci)} .game{--c:var(--game)} .anime{--c:var(--anime)} .movie{--c:var(--movie)}
 </style>
